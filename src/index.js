@@ -19,6 +19,7 @@ const gameServer = new colyseus.Server({
     server: server,
     verifyClient: function (info, next) {
         console.log(`[INFO]: connection from client is ${info.secure ? "secured" : "unsecured"}`);
+        next(true);
     },
 });
 

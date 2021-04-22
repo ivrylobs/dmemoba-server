@@ -2,43 +2,67 @@ import { Room, Client } from "colyseus";
 import { PlayerData, Quat, State, Vect3 } from "./schema/State";
 
 class PlayerInput {
-    position: Vect3;
-    rotation: Quat;
+	position: Vect3;
+	rotation: Quat;
 }
 
 export class MyRoom extends Room {
-    onCreate(options: any) {
-        this.setState(new State());
+	onCreate(options: any) {
+		this.setState(new State());
+		this.onMessage("input", (client, input) =>
+			this.onPlayerMove(client, input)
+		);
+	}
 
-        this.onMessage("input", (client, input) => this.onPlayerMove(client, input));
-    }
+	onJoin(client: Client, options: any) {
+		console.log(`Player ${client.sessionId} connected`);
+		const newPlayer: PlayerData = new PlayerData();
+		newPlayer.name = client.sessionId;
+		this.state.players[client.sessionId] = newPlayer;
+	}
 
-    onJoin(client: Client, options: any) {
-        console.log(`Player ${client.sessionId} connected`);
-        const newPlayer: PlayerData = new PlayerData();
-        newPlayer.name = client.sessionId;
-        this.state.players[client.sessionId] = newPlayer;
-    }
+	onLeave(client: Client, consented: boolean) {}
 
-    onLeave(client: Client, consented: boolean) {}
+	onDispose() {
+		console.log("last player left, room closing...");
+	}
 
-    onDispose() {
-        console.log("last player left, room closing...");
-    }
+	onPlayerMove(client: Client, playerInput: PlayerInput) {
+		const player: PlayerData = this.state.players[client.sessionId];
+		// if (
+		// 	playerInput.position.x != player.position.x ||
+		// 	playerInput.position.y != player.position.y ||
+		// 	playerInput.position.z != player.position.z
+		// ) {
 
-    onPlayerMove(client: Client, playerInput: PlayerInput) {
-        const player: PlayerData = this.state.players[client.sessionId];
-        if (
-            playerInput.position.x != player.position.x ||
-            playerInput.position.y != player.position.y ||
-            playerInput.position.z != player.position.z
-        ) {
-            const pos: Vect3 = new Vect3();
-            pos.x = playerInput.position.x;
-            pos.y = playerInput.position.y;
-            pos.z = playerInput.position.z;
-            player.position = pos;
-            console.log(`Player ${client.sessionId} moved at ${pos.x}, ${pos.y}, ${pos.z}`);
-        }
-    }
+		// }
+
+		const pos: Vect3 = new Vect3();
+		pos.x = playerInput.position.x;
+		pos.y = playerInput.position.y;
+		pos.z = playerInput.position.z;
+		player.position = pos;
+		console.log(
+			`Player ${client.sessionId} moved at ${pos.x}, ${pos.y}, ${pos.z}`
+		);
+
+		// if (
+		// 	playerInput.rotation.x != player.rotation.x ||
+		// 	playerInput.rotation.y != player.rotation.y ||
+		// 	playerInput.rotation.z != player.rotation.z ||
+		// 	playerInput.rotation.w != player.rotation.w
+		// ) {
+
+		// }
+
+		const rot: Quat = new Quat();
+		rot.x = playerInput.rotation.x;
+		rot.y = playerInput.rotation.y;
+		rot.z = playerInput.rotation.z;
+		rot.w = playerInput.rotation.w;
+		player.rotation = rot;
+		console.log(
+			`Player ${client.sessionId} look at ${rot.x}, ${rot.y}, ${rot.z}, ${rot.w}`
+		);
+	}
 }

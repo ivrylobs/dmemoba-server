@@ -30,6 +30,9 @@ class EntityData extends Schema {
 
     @type(Quat)
     rotation = new Quat();
+
+    @type("uint8")
+    hp = 100;
 }
 
 class PlayerData extends EntityData {

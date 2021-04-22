@@ -21,39 +21,27 @@ export class MyRoom extends Room {
 		this.state.players[client.sessionId] = newPlayer;
 	}
 
-	onLeave(client: Client, consented: boolean) {}
+	onLeave(client: Client, consented: boolean) {
+		if (this.state.players.has(client.sessionId)) {
+			this.state.players.delete(client.sessionId);
+		}
+	}
 
 	onDispose() {
 		console.log("last player left, room closing...");
 	}
 
-	onPlayerMove(client: Client, playerInput: PlayerInput) {
+	async onPlayerMove(client: Client, playerInput: PlayerInput) {
 		const player: PlayerData = this.state.players[client.sessionId];
-		// if (
-		// 	playerInput.position.x != player.position.x ||
-		// 	playerInput.position.y != player.position.y ||
-		// 	playerInput.position.z != player.position.z
-		// ) {
-
-		// }
 
 		const pos: Vect3 = new Vect3();
 		pos.x = playerInput.position.x;
 		pos.y = playerInput.position.y;
 		pos.z = playerInput.position.z;
 		player.position = pos;
-		console.log(
-			`Player ${client.sessionId} moved at ${pos.x}, ${pos.y}, ${pos.z}`
-		);
-
-		// if (
-		// 	playerInput.rotation.x != player.rotation.x ||
-		// 	playerInput.rotation.y != player.rotation.y ||
-		// 	playerInput.rotation.z != player.rotation.z ||
-		// 	playerInput.rotation.w != player.rotation.w
-		// ) {
-
-		// }
+		// console.log(
+		// 	`Player ${client.sessionId} moved at ${pos.x}, ${pos.y}, ${pos.z}`
+		// );
 
 		const rot: Quat = new Quat();
 		rot.x = playerInput.rotation.x;
@@ -61,8 +49,8 @@ export class MyRoom extends Room {
 		rot.z = playerInput.rotation.z;
 		rot.w = playerInput.rotation.w;
 		player.rotation = rot;
-		console.log(
-			`Player ${client.sessionId} look at ${rot.x}, ${rot.y}, ${rot.z}, ${rot.w}`
-		);
+		// console.log(
+		// 	`Player ${client.sessionId} look at ${rot.x}, ${rot.y}, ${rot.z}, ${rot.w}`
+		// );
 	}
 }
